@@ -112,6 +112,25 @@ def nfa_to_dfa(nfa):
     return dfa
 
 
+def print_dfa(dfa):
+    # Print header row
+    print("DFA STATE\tTYPE\ta\tb")
+    # Loop through states
+    for i, state in enumerate(dfa.states):
+        # Determine state type (accept or non-accept)
+        state_type = "accept" if state in dfa.accepting_states else ""
+        # Print subset, state type, and transitions for a and b
+        print(
+            "{%s}\t\t%s\t%s\t%s"
+            % (
+                ",".join(str(s) for s in state),
+                state_type,
+                dfa.transitions[state].get("a", ""),
+                dfa.transitions[state].get("b", ""),
+            )
+        )
+
+
 def simulate_nfa(nfa, s):
     current_states = e_closure(nfa, [nfa.start_state])
     for symbol in s:
@@ -260,8 +279,10 @@ nfa2 = NFA(
 
 
 dfa = nfa_to_dfa(nfa2)
+print_dfa(dfa)
 mini = minimize(dfa)
 draw_dfa(dfa)
+
 # draw_dfa(mini)
 
 # draw_dfa(dfa)
