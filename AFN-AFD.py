@@ -1,4 +1,4 @@
-from collections import deque
+from collections import deque, OrderedDict
 from graphviz import Digraph
 
 
@@ -68,7 +68,7 @@ def draw_dfa(dfa):
 
 def draw_dfa1(dfa):
     node_map = {}
-    g = Digraph("finite_state_machine", filename="dfa.gv")
+    g = Digraph("finite_state_machine", filename="dfa1.gv")
     g.attr(rankdir="LR", size="8,5")
 
     for state in sorted(dfa.states):
@@ -88,7 +88,7 @@ def draw_dfa1(dfa):
 
 def nfa_to_dfa(nfa):
     start_state = frozenset(e_closure(nfa, [nfa.start_state]))
-    states = set([start_state])
+    states = [start_state]  # Use a list to maintain state order
     alphabet = nfa.alphabet
     transitions = {}
     accepting_states = []
@@ -101,15 +101,14 @@ def nfa_to_dfa(nfa):
             if len(next_state) == 0:
                 continue
             if next_state not in states:
-                states.add(next_state)
+                states.append(next_state)  # Append new states to end of list
                 stack.append(next_state)
             if current_state not in transitions:
                 transitions[current_state] = {}
             transitions[current_state][symbol] = next_state
         if set(nfa.accepting_states).intersection(current_state):
             accepting_states.append(current_state)
-    sorted_states = sorted(list(states))  # Sort the states
-    dfa = DFA(sorted_states, alphabet, transitions, start_state, accepting_states)
+    dfa = DFA(states, alphabet, transitions, start_state, accepting_states)
     return dfa
 
 
@@ -262,8 +261,8 @@ nfa2 = NFA(
 
 dfa = nfa_to_dfa(nfa2)
 mini = minimize(dfa)
-# draw_dfa1(dfa)
-draw_dfa1(mini)
+draw_dfa(dfa)
+# draw_dfa(mini)
 
 # draw_dfa(dfa)
 # print("DFA states: ", dfa.states)
