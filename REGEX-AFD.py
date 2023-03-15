@@ -1,5 +1,6 @@
 from copy import deepcopy
 import time
+from graphviz import Digraph
 
 
 class RegexNode:
@@ -202,6 +203,30 @@ class RegexTree:
         positions = self.root.calc_functions(0, self.followpos)
         # print(self.followpos)
 
+    def to_graphviz(self):
+        # Create a new Digraph object
+        dot = Digraph()
+
+        # Add nodes to the graph
+        for i, q in enumerate(self.Q):
+            if i == self.q0:
+                # Mark the initial state
+                dot.node(str(i), label=str(i), shape="circle", style="bold")
+            elif i in self.F:
+                # Mark the accepting states
+                dot.node(str(i), label=str(i), shape="doublecircle")
+            else:
+                dot.node(str(i), label=str(i))
+
+        # Add edges to the graph
+        for i, q in enumerate(self.Q):
+            for a in self.V:
+                if a in self.d[i]:
+                    j = self.d[i][a]
+                    dot.edge(str(i), str(j), label=a)
+
+        return dot
+
     def toAFD(self):
         def contains_hashtag(q):
             for i in q:
@@ -249,6 +274,20 @@ class RegexTree:
                     if contains_hashtag(U):
                         F.append(Q.index(U))
                 d[Q.index(q)][a] = Q.index(U)
+                g = Digraph("G", filename="regex_tree.gv")
+            for q in Q:
+                # Set final state attributes
+                attrs = {}
+                if q in F:
+                    attrs["shape"] = "doublecircle"
+                if q == Q.index(q0):
+                    attrs["color"] = "blue"
+
+            for i, row in enumerate(d):
+                for a, j in row.items():
+                    # Add transition to graph
+                    g.edge(str(i), str(j), label=a)
+            g.view()
         return AFD(Q, V, d, Q.index(q0), F)
 
 
@@ -315,8 +354,8 @@ epsilon = "ϵ"
 alfabeto = None
 
 # Main
-# regex = "(b|b)*abb(a|b)*"
-regex = "(a*|b*)c"
+regex = "(b|b)*abb(a|b)*"
+# regex = "(a*|b*)c"
 
 # Procesa el Regex y genera el alfabeto del mismo
 t0 = time.perf_counter()
@@ -336,7 +375,6 @@ print("Regex: " + regex)
 print("Alfabeto : " + "".join(sorted(alfabeto)))
 print("Automata AFD resultante: \n")
 AFD.write()
-t1 = time.perf_counter()
-print("\nEl tiempo para pasar de REGEX a AFD es: ", t1 - t0)
-print('\nSimulacion sobre : "' + evaluar_cadena + '" : ')
+print('\nSimulacion en base a la cadena"' + evaluar_cadena + '" : \n')
 AFD.run(evaluar_cadena)
+print("")
