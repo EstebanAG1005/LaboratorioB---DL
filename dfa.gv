@@ -6,24 +6,14 @@ digraph finite_state_machine {
 	1
 	node [shape=circle]
 	2
-	node [shape=circle]
+	node [shape=doublecircle]
 	3
 	node [shape=doublecircle]
 	4
-	node [shape=doublecircle]
-	5
-	node [shape=doublecircle]
-	6
-	0 -> 1 [label=b]
-	0 -> 2 [label=a]
-	2 -> 3 [label=b]
-	3 -> 4 [label=b]
-	4 -> 5 [label=b]
-	4 -> 6 [label=a]
-	6 -> 5 [label=b]
-	6 -> 6 [label=a]
-	5 -> 5 [label=b]
-	5 -> 6 [label=a]
-	1 -> 1 [label=b]
-	1 -> 2 [label=a]
+	0 -> 1 [label=a]
+	0 -> 2 [label=b]
+	1 -> 2 [label=b]
+	2 -> 3 [label=a]
+	3 -> 3 [label=a]
+	3 -> 4 [label=c]
 }

@@ -1,0 +1,19 @@
+digraph finite_state_machine {
+	rankdir=LR size="8,5"
+	node [shape=circle]
+	"[frozenset({'6'})]"
+	node [shape=circle]
+	"[frozenset({'5', '1', '0', '3', '4'})]"
+	node [shape=circle]
+	"[frozenset({'5', '2'})]"
+	node [shape=doublecircle]
+	"[frozenset({'12', '15'})]"
+	node [shape=doublecircle]
+	"[frozenset({'8', '10', '13', '14', '15', '11', '7'}), frozenset({'13', '10', '14', '15', '11', '8', '9'})]"
+	"[frozenset({'6'})]" -> "[frozenset({'8', '10', '13', '14', '15', '11', '7'}), frozenset({'13', '10', '14', '15', '11', '8', '9'})]" [label=a]
+	"[frozenset({'5', '1', '0', '3', '4'})]" -> "[frozenset({'5', '2'})]" [label=a]
+	"[frozenset({'5', '1', '0', '3', '4'})]" -> "[frozenset({'6'})]" [label=b]
+	"[frozenset({'5', '2'})]" -> "[frozenset({'6'})]" [label=b]
+	"[frozenset({'8', '10', '13', '14', '15', '11', '7'}), frozenset({'13', '10', '14', '15', '11', '8', '9'})]" -> "[frozenset({'8', '10', '13', '14', '15', '11', '7'}), frozenset({'13', '10', '14', '15', '11', '8', '9'})]" [label=a]
+	"[frozenset({'8', '10', '13', '14', '15', '11', '7'}), frozenset({'13', '10', '14', '15', '11', '8', '9'})]" -> "[frozenset({'12', '15'})]" [label=c]
+}
