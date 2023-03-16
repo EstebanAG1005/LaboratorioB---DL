@@ -44,6 +44,40 @@ def move(nfa, states, symbol):
     return move_set
 
 
+def display_subsets(dfa):
+    node_map = {}
+    table = []
+
+    for state in sorted(dfa.states):
+        node_map[state] = str(sorted(list(state)))
+
+    header = ["State", "A", "B", "Accept"]
+    table.append(header)
+
+    for state, transitions in dfa.transitions.items():
+        row = [node_map[state]]
+        for symbol in sorted(dfa.alphabet):
+            next_state = transitions.get(symbol, None)
+            row.append(node_map[next_state] if next_state else "")
+
+        if state in dfa.accepting_states:
+            row.append("Accept")
+        else:
+            row.append("")
+
+        table.append(row)
+
+    return table
+
+
+def print_table(table):
+    col_widths = [max(len(str(cell)) for cell in col) for col in zip(*table)]
+    for row in table:
+        print(
+            "".join(str(cell).ljust(width + 2) for cell, width in zip(row, col_widths))
+        )
+
+
 def draw_dfa(dfa):
     node_map = {}
     node_id = 0
@@ -110,25 +144,6 @@ def nfa_to_dfa(nfa):
             accepting_states.append(current_state)
     dfa = DFA(states, alphabet, transitions, start_state, accepting_states)
     return dfa
-
-
-def print_dfa(dfa):
-    # Print header row
-    print("DFA STATE\tTYPE\ta\tb")
-    # Loop through states
-    for i, state in enumerate(dfa.states):
-        # Determine state type (accept or non-accept)
-        state_type = "accept" if state in dfa.accepting_states else ""
-        # Print subset, state type, and transitions for a and b
-        print(
-            "{%s}\t\t%s\t%s\t%s"
-            % (
-                ",".join(str(s) for s in state),
-                state_type,
-                dfa.transitions[state].get("a", ""),
-                dfa.transitions[state].get("b", ""),
-            )
-        )
 
 
 def simulate_nfa(nfa, s):
@@ -318,7 +333,7 @@ def minimize(self):
 #     accepting_states={"15"},
 # )
 
-nfa3 = NFA(
+nfa4 = NFA(
     states={
         "0",
         "1",
@@ -336,36 +351,44 @@ nfa3 = NFA(
         "13",
         "14",
         "15",
+        "16",
+        "17",
+        "18",
     },
-    alphabet={"a", "b", "c"},
+    alphabet={"a", "b"},
     transitions={
-        "0": {"ε": {"1", "3"}},
-        "1": {"a": {"2"}},
-        "2": {"ε": {"5"}},
-        "3": {"ε": {"4"}},
-        "4": {"ε": {"5"}},
-        "5": {"b": {"6"}},
-        "6": {"a": {"7"}},
-        "7": {"ε": {"8", "10"}},
-        "8": {"a": {"9"}},
-        "9": {"ε": {"8", "10"}},
-        "10": {"ε": {"11", "13"}},
-        "11": {"c": {"12"}},
-        "12": {"ε": {"15"}},
-        "13": {"ε": {"14"}},
-        "14": {"ε": {"15"}},
+        "0": {"ε": {"1", "7"}},
+        "1": {"ε": {"2", "4"}},
+        "2": {"a": {"3"}},
+        "3": {"ε": {"6"}},
+        "4": {"b": {"5"}},
+        "5": {"ε": {"6"}},
+        "6": {"ε": {"1", "7"}},
+        "7": {"a": {"8"}},
+        "8": {"ε": {"9", "11"}},
+        "9": {"a": {"10"}},
+        "10": {"ε": {"13"}},
+        "11": {"b": {"12"}},
+        "12": {"ε": {"13"}},
+        "13": {"ε": {"14", "16"}},
+        "14": {"a": {"15"}},
+        "15": {"ε": {"18"}},
+        "16": {"b": {"17"}},
+        "17": {"ε": {"18"}},
     },
     start_state="0",
-    accepting_states={"15"},
+    accepting_states={"18"},
 )
 
 
-dfa = nfa_to_dfa(nfa3)
-# print_dfa(dfa)
+dfa = nfa_to_dfa(nfa4)
 mini = minimize(dfa)
-# draw_dfa(dfa)
+draw_dfa1(dfa)
 
-draw_dfa(mini)
+subsets_table = display_subsets(dfa)
+print_table(subsets_table)
+
+# draw_dfa(mini)
 
 # draw_dfa(dfa)
 # print("DFA states: ", dfa.states)
@@ -375,7 +398,7 @@ draw_dfa(mini)
 
 # Simulacion AFN
 input_string = "abbbca"
-result = simulate_nfa(nfa3, input_string)
+result = simulate_nfa(nfa4, input_string)
 print("\nSimulacion AFN")
 print(f"\nEl input {input_string} {'es' if result else 'no es '}aceptada por el AFN.")
 

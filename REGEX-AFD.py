@@ -348,33 +348,77 @@ def gen_alfabeto(regex):
     return set(regex) - set("()|*")
 
 
+def is_valid_regex(regex):
+    stack = []
+    regex_characters = set("()|*")
+    regex_count = {char: 0 for char in regex_characters}
+
+    for char in regex:
+        if char in regex_characters:
+            regex_count[char] += 1
+
+        if char == "(":
+            stack.append(char)
+        elif char == ")":
+            if not stack or stack[-1] != "(":
+                return False
+            stack.pop()
+
+    if stack:
+        return False
+
+    if regex_count["*"] > (regex_count["("] + regex_count["|"]):
+        return False
+
+    return True
+
+
+# Function to check if the regex is valid
+def check_regex_validity(regex):
+    valid_chars = set(
+        "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789()|*"
+    )
+    invalid_chars = set(regex) - valid_chars
+    if invalid_chars:
+        raise ValueError(
+            f"Invalid characters found in the regex: {', '.join(invalid_chars)}"
+        )
+    return True
+
+
 # Valores iniciales
 usar_epsilon = True
 epsilon = "ϵ"
 alfabeto = None
 
 # Main
-regex = "(b|b)*abb(a|b)*"
+regex = "(a|b)*"
 # regex = "(a*|b*)c"
 
-# Procesa el Regex y genera el alfabeto del mismo
-t0 = time.perf_counter()
-p_regex = pre_proceso(regex)
-alfabeto = gen_alfabeto(p_regex)
+# Validate the regex
+check_regex_validity(regex)
 
-# Construccion de regex a afd
-tree = RegexTree(p_regex)
-tree.write()
-AFD = tree.toAFD()
+if is_valid_regex(regex):
+    # Procesa el Regex y genera el alfabeto del mismo
+    t0 = time.perf_counter()
+    p_regex = pre_proceso(regex)
+    alfabeto = gen_alfabeto(p_regex)
 
-# Se simula la cadena predeterminada
-evaluar_cadena = "babbaaaaa"
+    # Construccion de regex a afd
+    tree = RegexTree(p_regex)
+    tree.write()
+    AFD = tree.toAFD()
 
-# prints finales para mostrar AFD resutante
-print("Regex: " + regex)
-print("Alfabeto : " + "".join(sorted(alfabeto)))
-print("Automata AFD resultante: \n")
-AFD.write()
-print('\nSimulacion en base a la cadena"' + evaluar_cadena + '" : \n')
-AFD.run(evaluar_cadena)
-print("")
+    # Se simula la cadena predeterminada
+    evaluar_cadena = "babbaaaaa"
+
+    # prints finales para mostrar AFD resutante
+    print("Regex: " + regex)
+    print("Alfabeto : " + "".join(sorted(alfabeto)))
+    print("Automata AFD resultante: \n")
+    AFD.write()
+    print('\nSimulacion en base a la cadena"' + evaluar_cadena + '" : \n')
+    AFD.run(evaluar_cadena)
+    print("")
+else:
+    print("Invalid regex")
